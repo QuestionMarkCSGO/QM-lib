@@ -2,8 +2,8 @@ import discord
 import time
 import asyncio
 from discord.ext import commands
-from lib.bembed import Bembed
-from lib.timer import Timer
+import lib.bembed
+import lib.timer
 import lib.helper as hlp
 
 # create bot
@@ -12,8 +12,15 @@ bot = commands.Bot(command_prefix=commands.when_mentioned_or('-'), description='
 # show connected servers if ready
 @bot.event
 async def on_ready():
+
     hlp.log_guilds(bot)
 
+@bot.event
+async def on_message(msg):
+    if msg.author.id == bot.id: # ignore if message was send by the bot
+        return
+
+    await bot.process_commands(message)
 
 @bot.command()
 async def test(ctx):

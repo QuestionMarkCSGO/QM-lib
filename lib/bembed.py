@@ -22,15 +22,13 @@ class Bembed:
         self.emb = self.blank_emb()
         self.fields = {}
         self.msg = None
+        self.reactions = {}
 
 
 
     #
     #   Helper Functions
     #
-
-
-
     def blank_emb(self):
         if self.url:
             emb = discord.Embed(title=self.title, description=self.description, color=self.color, url=self.url)
@@ -65,6 +63,30 @@ class Bembed:
     #
     #   Embed Functions
     #
+    async def set_reactions(self):
+        for react in self.reactions:
+            try:
+                await self.msg.add_reaction(react)
+            except Exception as e:
+                log.warning(e)
+                return
+
+    async def add_reaction(self, react, func=None):
+        self.reactions[react] = func
+        log.debug(self.reactions)
+        await self.set_reactions()
+
+    async def rem_reaction(self, react):
+        self.reactions.pop(react)
+        log.debug(self.reactions)
+        await self.set_reactions()
+
+
+
+
+
+
+
     def set_fields(self, emb):
         for field in self.fields: # set all fields
             emb.add_field(name=field, value=self.fields[field][0], inline=self.fields[field][1])

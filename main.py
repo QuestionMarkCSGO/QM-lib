@@ -34,9 +34,10 @@ async def test(ctx):
     await emb.update('remfield', 'test')
     await emb.update('clearfields')
     await emb.update('addimage', 'image.jpg')
-    await emb.update('remimage')
-    time.sleep(3)
-    await emb.update('addfields', {'Loww':['Heloowwww', True] , 'Brrrt':['Pow', False]})
+    # await emb.update('remimage')
+    # time.sleep(3)
+    # await emb.update('addfields', {'Loww':['Heloowwww', True] , 'Brrrt':['Pow', False]})
+    await emb.add_reaction('😊')
     #await emb.update('remimage')
 
     await ctx.message.delete()

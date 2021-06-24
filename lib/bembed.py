@@ -9,7 +9,7 @@ if __name__ == 'lib.bembed':
     log.info('bembed.py loaded')
 
 class Bembed:
-    def __init__(self, type, title, description, color='red', url=None, bot=None, footer=None, author=None):
+    def __init__(self, type, title, description, color='red', url=None, bot=None, footer=None, footer_icon=None, author=None):
         log.debug(f'Bembed initialized with: type={type}, title={title}, description={description}, color={color}, url={url}, footer={footer}, author={author}')
         self.type = type
         self.title = title
@@ -19,6 +19,7 @@ class Bembed:
         self.bot = bot
         self.author = author
         self.footer = footer
+        self.footer_icon = footer_icon
         self.emb = self.blank_emb()
         self.fields = {}
         self.msg = None
@@ -126,7 +127,7 @@ class Bembed:
         if mode == 'clearfields': # clear all fields
             self.fields = {}
         # --------- Image --------- #
-        if mode == 'addimage':
+        if mode == 'addimg':
             if not content:
                 log.warning('specify the content! (image location)')
                 return
@@ -140,9 +141,27 @@ class Bembed:
             self.type = 'img'
             emb = self.set_fields(emb)
 
-        if mode == 'remimage':
+        if mode == 'remimg':
             self.type = 'txt'
             emb = self.set_fields(emb)
+
+        if mode == 'addthb':
+            if not content or:
+                log.warning('specify the content! (image location)')
+                return
+            if not type =='txt':
+                log.warning('you can only add a thumbnail to a txt embed')
+                return
+            img_dir = local_cwd + content
+            try:
+                file = discord.File(img_dir, filename='img.png')
+            except FileNotFoundError as e:
+                log.warning(e)
+                return
+            emb.add_thumbnail(url="attachment://img.png")
+
+
+
         # ------------------------------------------------------- #
         # -------------------- Sending Embed -------------------- #
         # ------------------------------------------------------- #

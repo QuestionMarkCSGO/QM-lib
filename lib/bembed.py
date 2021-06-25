@@ -1,5 +1,6 @@
 import discord
 from lib.colors import colors    # import color dict
+from lib.icons import icons    # import icon dict
 import validators       # validation like url checking etc
 import logging as log   # logging module
 
@@ -9,7 +10,7 @@ if __name__ == 'lib.bembed':
     log.info('bembed.py loaded')
 
 class Bembed:
-    def __init__(self, type, title, description, color='red', url=None, bot=None, footer=None, footer_icon=None, author=None):
+    def __init__(self, type='txt', title='Embed Title', description='', color='red', url=None, bot=None, footer=None, footer_icon=None, author=None):
         log.debug(f'Bembed initialized with: type={type}, title={title}, description={description}, color={color}, url={url}, footer={footer}, author={author}')
         self.type = type
         self.title = title
@@ -24,6 +25,7 @@ class Bembed:
         self.fields = {}
         self.msg = None
         self.reactions = {}
+        self.is_send = False
 
 
 
@@ -72,20 +74,17 @@ class Bembed:
                 log.warning(e)
                 return
 
-    async def add_reaction(self, react, func=None):
-        self.reactions[react] = func
-        log.debug(self.reactions)
+    async def add_reaction(self, react, type=None, func=None):
+        #if callable(func)
+        self.reactions[react] = [type, func]
+        print(f'{react} added')
         await self.set_reactions()
 
     async def rem_reaction(self, react):
         self.reactions.pop(react)
-        log.debug(self.reactions)
+        print(f'{react} removed')
+        print(self.reactions)
         await self.set_reactions()
-
-
-
-
-
 
 
     def set_fields(self, emb):
@@ -94,8 +93,11 @@ class Bembed:
         return emb
 
     # generates an new embed and send it:
-
     async def update(self, mode, content=None):
+        # check if embed is send
+        if not self.is_send:
+            log.warning('You need to send the Embed before updating it')
+            return
         # ------------------------------------------------------- #
         # -------------------- Generate Embed -------------------- #
         # ------------------------------------------------------- #
@@ -131,25 +133,31 @@ class Bembed:
             if not content:
                 log.warning('specify the content! (image location)')
                 return
-            img_dir = local_cwd + content
-            try:
-                file = discord.File(img_dir, filename='img.png')
-            except FileNotFoundError as e:
-                log.warning(e)
-                return
-            emb.set_image(url="attachment://img.png")
+            is_url = validators.url(content)
+            if not is_url:
+                print('Image is not url!')
+                try:
+                    img_dir = local_cwd + content
+                    file = discord.File(img_dir, filename='img.png')
+                    emb.set_image(url="attachment://img.png")
+                except FileNotFoundError as e:
+                    log.warning(e)
+                    return
+            else:
+                print('Image is url!')
+                emb.set_image(url=content)
             self.type = 'img'
-            emb = self.set_fields(emb)
+            #emb = self.set_fields(emb)
 
         if mode == 'remimg':
             self.type = 'txt'
             emb = self.set_fields(emb)
 
         if mode == 'addthb':
-            if not content or:
+            if not content:
                 log.warning('specify the content! (image location)')
                 return
-            if not type =='txt':
+            if self.type !='txt':
                 log.warning('you can only add a thumbnail to a txt embed')
                 return
             img_dir = local_cwd + content
@@ -158,7 +166,7 @@ class Bembed:
             except FileNotFoundError as e:
                 log.warning(e)
                 return
-            emb.add_thumbnail(url="attachment://img.png")
+            emb.set_thumbnail(url="attachment://img.png")
 
 
 
@@ -169,15 +177,34 @@ class Bembed:
         if self.type == 'img':
             self.emb = emb # write new emb
             await self.msg.delete()
-            # send embed with file if it is img
-            self.msg = await old_msg.channel.send(embed=self.emb, file=file)
+            if is_url:
+                # send embed without file if it is a link
+                self.msg = await old_msg.channel.send(embed=self.emb)
+            else:
+                # send embed with file if it is local img
+                self.msg = await old_msg.channel.send(embed=self.emb, file=file)
 
 
         if old_type == self.type == 'txt': # if old and new type is txt
             self.emb = emb # write new emb
             await self.msg.edit(embed=self.emb) # edit embed
 
+    async def set_info(self, title, text=' '):
+        self.emb = discord.Embed(title=title, description=text, color=self.get_color('green'))
+        self.emb.set_author(name='Info!', icon_url=icons['info'])
 
+    async def set_warning(self, title, text=' '):
+        self.emb = discord.Embed(title=title, description=text, color=self.get_color('yellow'))
+        self.emb.set_author(name='Warning!', icon_url=icons['warning'])
+
+    async def set_error(self, title, text=' '):
+        self.emb = discord.Embed(title=title, description=text, color=self.get_color('red'))
+        self.emb.set_author(name='Error!', icon_url=icons['error'])
 
     async def send(self, channel):
-        self.msg = await channel.send(embed=self.emb)
+        try:
+            self.msg = await channel.send(embed=self.emb)
+            self.is_send = True
+        except Exception as e:
+            log.error(e)
+            return

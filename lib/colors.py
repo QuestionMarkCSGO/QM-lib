@@ -12,6 +12,7 @@ colors = {
     'dark_magenta': 0xad1457,
     'gold': 0xf1c40f,
     'dark_gold': 0xc27c0e,
+    'yellow': 0xFFFF00,
     'orange': 0xe67e22,
     'dark_orange': 0xa84300,
     'red': 0xe74c3c,

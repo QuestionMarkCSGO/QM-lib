@@ -2,8 +2,8 @@ import discord
 import time
 import asyncio
 from discord.ext import commands
-import lib.bembed
-import lib.timer
+from lib.bembed import Bembed
+from lib.timer import Timer
 import lib.helper as hlp
 
 # create bot
@@ -17,10 +17,10 @@ async def on_ready():
 
 @bot.event
 async def on_message(msg):
-    if msg.author.id == bot.id: # ignore if message was send by the bot
+    if msg.author == bot.user: # ignore if message was send by the bot
         return
 
-    await bot.process_commands(message)
+    await bot.process_commands(msg)
 
 @bot.command()
 async def test(ctx):
@@ -33,18 +33,27 @@ async def test(ctx):
 
     # timer1 = Timer(time=15, name="Timer 1", callback=some_callback, end_func=end_func)
 
-
-    emb = Bembed('txt', 'Test!', 'Hallo Test Embed!!', 'BLuE', bot=bot, author={'name': 'Jichael Mackson', 'url':'https://google.de', 'icon': 'https://cdn.onlinewebfonts.com/svg/img_311588.png'})
-    await emb.send(ctx.channel)
-    await emb.update('addfields', {'test':['myval', False] , 'moretest':['mrevlue', False]})
+    bemb = Bembed(title='test')
+    await bemb.send(ctx.channel)
+    await bemb.update('addimg', 'image.jpg')
+    #warning =  Bembed()
+    #await warning.set_error('Marko Dog!')
+    #await warning.send(ctx.channel)
+    #emb = Bembed('txt', 'Test!', 'Hallo Test Embed!!', 'BLuE', bot=bot, author={'name': 'Jichael Mackson', 'url':'https://google.de', 'icon': 'https://cdn.onlinewebfonts.com/svg/img_311588.png'})
+    #await emb.send(ctx.channel)
+    #await emb.update('addfields', {'test':['myval', False] , 'moretest':['mrevlue', False]})
+    #print(f'emb type: {emb.type}')
     #await emb.update('addfields', {'testing':['myvale2', True] , 'moretestino':['mrevlue', True]})
-    await emb.update('remfield', 'test')
-    await emb.update('clearfields')
-    await emb.update('addthb', 'image.jpg')
+    #await emb.update('remfield', 'test')
+    #await emb.update('clearfields')
+    #await emb.update('addthb', 'image.jpg')
+
+
     # await emb.update('remimg')
     # time.sleep(3)
     # await emb.update('addfields', {'Loww':['Heloowwww', True] , 'Brrrt':['Pow', False]})
-    await emb.add_reaction('😊')
+    await bemb.add_reaction('😊')
+    await bemb.add_reaction('❤')
     #await emb.update('remimage')
 
     await ctx.message.delete()

@@ -1,6 +1,6 @@
 import discord
-from lib.colors import colors    # import color dict
-from lib.icons import icons    # import icon dict
+from colors import colors    # import color dict
+from icons import icons    # import icon dict
 import validators       # validation like url checking etc
 import logging as log   # logging module
 
@@ -76,7 +76,7 @@ class Bembed:
     async def delete_msg():
         await self.msg.delete()
     # add reaction to embed msg.
-    # usage: await add_reaction({'react': ['type', func]})
+    # usage: await self.add_reaction({'react': ['type', func]})
     # react -> emoji
     # type -> 'stay': the reaction of any user will stay or 'remove': the reaction will be deleted so there should be only one react on every emoji
     # func -> you can give a function wich will be called when someone reacts on this emoji or use a keyword:
@@ -103,6 +103,15 @@ class Bembed:
         return emb
 
     # generates an new embed and send it:
+    # usage: await self.update('mode', content)
+    # mode keywords:
+    # addfield(s): adds one or multiple fields. content: {'name':['value', is_inline (True/False)]})
+    # remfield: removes one field. content: 'name' (name of the field you added with addfield)
+    # clearfields: removes all fields at once. Don't need content
+    # addimg: set an image. content: path to image (relative to the cwd) or url to an image
+    # remimg: set embed to text. Don't need content
+    # addthb: set the thumbnail. content: path to image (relative to the cwd) or url to an image
+    # remthb: removes the thumbnail. Don't need content
     async def update(self, mode, content=None):
         # check if embed is send
         if not self.is_send:
@@ -128,7 +137,8 @@ class Bembed:
                 for field in content:  # add new fields to self.fields
                     self.fields[field] = content[field]
                 emb = self.set_fields(emb)
-
+            else:
+                log.error('content needs to be a dict. ')
         # remove a specific field content: 'field_name'
         if mode == 'remfield':
             if not content:
@@ -177,16 +187,17 @@ class Bembed:
                 return
             is_url = validators.url(content)
             if not is_url:
-                print('Image is not url!')
+                log.debug('Image is not url!')
                 try:
                     img_dir = local_cwd + content
+                    log.info(f'image dir: {img_dir}')
                     file = discord.File(img_dir, filename='img.png')
                     emb.set_thumbnail(url="attachment://img.png")
                 except FileNotFoundError as e:
                     log.warning(e)
                     return
             else:
-                print('Image is url!')
+                log.debug('Image is url!')
                 emb.set_thumbnail(url=content)
 
 

@@ -2,9 +2,9 @@ import discord
 import time
 import asyncio
 from discord.ext import commands
-from lib.bembed import Bembed
-from lib.timer import Timer
-import lib.helper as hlp
+from bembed import Bembed
+from log_guilds import log_guilds
+#from lib.timer import Timer
 
 # create bot
 bot = commands.Bot(command_prefix=commands.when_mentioned_or('-'), description='Random Team Generator')
@@ -12,8 +12,7 @@ bot = commands.Bot(command_prefix=commands.when_mentioned_or('-'), description='
 # show connected servers if ready
 @bot.event
 async def on_ready():
-
-    hlp.log_guilds(bot)
+    log_guilds(bot)
 
 @bot.event
 async def on_message(msg):

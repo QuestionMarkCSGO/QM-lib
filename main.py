@@ -33,7 +33,7 @@ async def test(ctx):
 
     # timer1 = Timer(time=15, name="Timer 1", callback=some_callback, end_func=end_func)
 
-    bemb = Bembed(title='test')
+    bemb = Bembed(bot=bot, title='test')
     await bemb.send(ctx.channel)
     await bemb.update('addimg', 'image.jpg')
     #warning =  Bembed()
@@ -46,7 +46,7 @@ async def test(ctx):
     #await emb.update('addfields', {'testing':['myvale2', True] , 'moretestino':['mrevlue', True]})
     #await emb.update('remfield', 'test')
     #await emb.update('clearfields')
-    #await emb.update('addthb', 'image.jpg')
+    await emb.update('addthb', 'image.jpg')
 
 
     # await emb.update('remimg')

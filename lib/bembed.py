@@ -10,7 +10,7 @@ if __name__ == 'lib.bembed':
     log.info('bembed.py loaded')
 
 class Bembed:
-    def __init__(self, type='txt', title='Embed Title', description='', color='red', url=None, bot=None, footer=None, footer_icon=None, author=None):
+    def __init__(self, bot, type='txt', title='Embed Title', description='', color='red', url=None, footer=None, footer_icon=None, author=None):
         log.debug(f'Bembed initialized with: type={type}, title={title}, description={description}, color={color}, url={url}, footer={footer}, author={author}')
         self.type = type
         self.title = title
@@ -73,9 +73,19 @@ class Bembed:
             except Exception as e:
                 log.warning(e)
                 return
-
-    async def add_reaction(self, react, type=None, func=None):
-        #if callable(func)
+    async def delete_msg():
+        await self.msg.delete()
+    # add reaction to embed msg.
+    # usage: await add_reaction({'react': ['type', func]})
+    # react -> emoji
+    # type -> 'stay': the reaction of any user will stay or 'remove': the reaction will be deleted so there should be only one react on every emoji
+    # func -> you can give a function wich will be called when someone reacts on this emoji or use a keyword:
+    # func keywords:
+    # 'delete' -> delete the message
+    async def add_reaction(self, react, type='stay', func=None):
+        if not callable(func):
+            if func == 'delete':
+                func = self.delete_msg
         self.reactions[react] = [type, func]
         print(f'{react} added')
         await self.set_reactions()
@@ -106,7 +116,7 @@ class Bembed:
         old_msg = self.msg
         emb = self.blank_emb()
         # --------- Fields --------- #
-        # add one field to current fields. content needs to be a dict with {'name': ['value', inline (bool)]}
+        # add one field to current fields. content needs to be a dict with {'field_name': ['value', inline (bool)]}
         if mode == 'addfields' or mode == 'addfield': # add one or multiple fields
             if not content:
                 log.warning('specify the content! (field(s) to be added)')
@@ -119,16 +129,19 @@ class Bembed:
                     self.fields[field] = content[field]
                 emb = self.set_fields(emb)
 
-        if mode == 'remfield': # remove a specific field
+        # remove a specific field content: 'field_name'
+        if mode == 'remfield':
             if not content:
                 log.warning('specify the content! (field to be removed)')
                 return
             self.fields.pop(content) # remove field from self.fields
             emb = self.set_fields(emb)
 
-        if mode == 'clearfields': # clear all fields
+        # clears all fields
+        if mode == 'clearfields':
             self.fields = {}
         # --------- Image --------- #
+        # set embed image. content needs to be a local file inside the folder of your bot.py or an url to an image
         if mode == 'addimg':
             if not content:
                 log.warning('specify the content! (image location)')
@@ -149,10 +162,12 @@ class Bembed:
             self.type = 'img'
             #emb = self.set_fields(emb)
 
+        # remove the image
         if mode == 'remimg':
             self.type = 'txt'
             emb = self.set_fields(emb)
 
+        # add a thumbnail to the embed. content needs to be a local file inside the folder of your bot.py or an url to an image
         if mode == 'addthb':
             if not content:
                 log.warning('specify the content! (image location)')

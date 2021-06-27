@@ -205,10 +205,8 @@ class Bembed:
             else:
                 # send embed with file if it is local img
                 self.msg = await old_msg.channel.send(embed=self.emb, file=file)
-
-
-        if old_type == self.type == 'txt': # if old and new type is txt
-            await self.msg.edit(embed=self.emb) # edit embed
+        if old_type == self.type == 'txt': # if old and new type is txt edit the msg
+            await self.msg.edit(embed=self.emb)
 
     async def set_info(self, title, text=' '):
         self.emb = discord.Embed(title=title, description=text, color=self.get_color('green'))

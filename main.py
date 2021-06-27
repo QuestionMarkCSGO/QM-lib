@@ -35,7 +35,7 @@ async def test(ctx):
 
     bemb = Bembed(bot=bot, title='test')
     await bemb.send(ctx.channel)
-    await bemb.update('addimg', 'image.jpg')
+    #await bemb.update('addimg', 'image.jpg')
     #warning =  Bembed()
     #await warning.set_error('Marko Dog!')
     #await warning.send(ctx.channel)
@@ -46,7 +46,7 @@ async def test(ctx):
     #await emb.update('addfields', {'testing':['myvale2', True] , 'moretestino':['mrevlue', True]})
     #await emb.update('remfield', 'test')
     #await emb.update('clearfields')
-    await emb.update('addthb', 'image.jpg')
+    await bemb.update('addthb', 'image.jpg')
 
 
     # await emb.update('remimg')

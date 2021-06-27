@@ -87,13 +87,13 @@ class Bembed:
             if func == 'delete':
                 func = self.delete_msg
         self.reactions[react] = [type, func]
-        print(f'{react} added')
+        log.info(f'{react} added')
         await self.set_reactions()
 
     async def rem_reaction(self, react):
         self.reactions.pop(react)
-        print(f'{react} removed')
-        print(self.reactions)
+        log.info(f'{react} removed')
+        log.debuglog(self.reactions)
         await self.set_reactions()
 
 
@@ -175,13 +175,20 @@ class Bembed:
             if self.type !='txt':
                 log.warning('you can only add a thumbnail to a txt embed')
                 return
-            img_dir = local_cwd + content
-            try:
-                file = discord.File(img_dir, filename='img.png')
-            except FileNotFoundError as e:
-                log.warning(e)
-                return
-            emb.set_thumbnail(url="attachment://img.png")
+            is_url = validators.url(content)
+            if not is_url:
+                print('Image is not url!')
+                try:
+                    img_dir = local_cwd + content
+                    file = discord.File(img_dir, filename='img.png')
+                    emb.set_thumbnail(url="attachment://img.png")
+                except FileNotFoundError as e:
+                    log.warning(e)
+                    return
+            else:
+                print('Image is url!')
+                emb.set_thumbnail(url=content)
+
 
 
 
@@ -189,8 +196,8 @@ class Bembed:
         # -------------------- Sending Embed -------------------- #
         # ------------------------------------------------------- #
         # send new msg if type is changed from txt to img (or vice versa)
+        self.emb = emb # write new emb
         if self.type == 'img':
-            self.emb = emb # write new emb
             await self.msg.delete()
             if is_url:
                 # send embed without file if it is a link
@@ -201,7 +208,6 @@ class Bembed:
 
 
         if old_type == self.type == 'txt': # if old and new type is txt
-            self.emb = emb # write new emb
             await self.msg.edit(embed=self.emb) # edit embed
 
     async def set_info(self, title, text=' '):

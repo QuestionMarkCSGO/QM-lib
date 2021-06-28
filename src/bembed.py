@@ -158,16 +158,17 @@ class Bembed:
                 return
             is_url = validators.url(content)
             if not is_url:
-                print('Image is not url!')
+                log.debug('Image is not url!')
                 try:
                     img_dir = local_cwd + content
+                    log.debug(f'setting image as thumbnail. image dir: {img_dir}')
                     file = discord.File(img_dir, filename='img.png')
                     emb.set_image(url="attachment://img.png")
                 except FileNotFoundError as e:
                     log.warning(e)
                     return
             else:
-                print('Image is url!')
+                log.debug('Image is url!')
                 emb.set_image(url=content)
             self.type = 'img'
             #emb = self.set_fields(emb)
@@ -190,7 +191,7 @@ class Bembed:
                 log.debug('Image is not url!')
                 try:
                     img_dir = local_cwd + content
-                    log.info(f'image dir: {img_dir}')
+                    log.debug(f'setting image as thumbnail. image dir: {img_dir}')
                     file = discord.File(img_dir, filename='img.png')
                     emb.set_thumbnail(url="attachment://img.png")
                 except FileNotFoundError as e:
@@ -217,7 +218,11 @@ class Bembed:
                 # send embed with file if it is local img
                 self.msg = await old_msg.channel.send(embed=self.emb, file=file)
         if old_type == self.type == 'txt': # if old and new type is txt edit the msg
-            await self.msg.edit(embed=self.emb)
+            if mode == 'addthb' and not is_url: # adds file if mode is add thumbnail
+                log.warning(f'Local images as thumbnail are currently not supportet in this version')
+                #await self.msg.edit(embed=self.emb, file=file)
+            else:
+                await self.msg.edit(embed=self.emb)
 
     async def set_info(self, title, text=' '):
         self.emb = discord.Embed(title=title, description=text, color=self.get_color('green'))

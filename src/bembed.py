@@ -1,8 +1,9 @@
 import discord
-from colors import colors    # import color dict
-from icons import icons    # import icon dict
-import validators       # validation like url checking etc
-import logging as log   # logging module
+from colors import colors   # import color dict
+from icons import icons     # import icon dict
+import validators           # validation like url checking etc
+import logging as log       # logging module
+import brofile              # better profiles for dicord
 
 log.basicConfig(level=log.INFO, format='%(levelname)s: %(message)s')
 

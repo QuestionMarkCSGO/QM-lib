@@ -4,6 +4,7 @@ import asyncio
 from discord.ext import commands
 from bembed import Bembed
 from log_guilds import log_guilds
+import brofile # better profiles for dicord
 #from lib.timer import Timer
 
 # create bot
@@ -18,7 +19,8 @@ async def on_ready():
 async def on_message(msg):
     if msg.author == bot.user: # ignore if message was send by the bot
         return
-
+    brofile.set_player(msg.author)
+    brofile.add_xp(msg.author, 10)
     await bot.process_commands(msg)
 
 @bot.command()

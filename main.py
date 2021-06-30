@@ -19,6 +19,14 @@ async def on_ready():
 async def on_message(msg):
     if msg.author == bot.user: # ignore if message was send by the bot
         return
+    if msg.mentions:
+        for mention in msg.mentions:
+            if mention == msg.author:
+                pass
+            else:
+                brofile.set_player(mention)
+                brofile.add_xp(mention, 25)
+
     brofile.set_player(msg.author)
     brofile.add_xp(msg.author, 10)
     await bot.process_commands(msg)
@@ -59,12 +67,11 @@ async def test(ctx):
 
     await ctx.message.delete()
 
-
 @bot.command()
-async def emb(ctx, title, desc, color='red'):
-    emb = Bembed('txt', title, desc, color)
+async def xp(ctx):
+    emb = Bembed('txt', 'Xp:', brofile.get_xp(ctx.author))
     await emb.send(ctx.channel)
-    await ctx.message.delete()
+    #await ctx.message.delete()
 
 # get the token
 from get_token import token

@@ -10,7 +10,21 @@ main_dir = os.path.dirname(main_dir)
 db_path = main_dir + '\\profiles.db'
 print(db_path)
 
-# get ranks json
+# get ranks dict
+ranks = {
+    'Silver I': 500,
+    'Silver II': 1500,
+    'Silver III': 3500,
+    'Silver IV': 4500,
+    'Silver Elite': 5500,
+    'Silver Elite Master': 6500,
+    'Gold Nova I': 8000,
+    'Gold Nova II': 9000,
+    'Gold Nova III': 10000,
+    'Gold Nova Master': 11000,
+    'Master Guardian I': 13000,
+    'Master Guardian II': 15000,
+}
 
 
 
